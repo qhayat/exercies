@@ -1,0 +1,10 @@
+overblog_graphql:
+  batching_method: "apollo"
+  definitions:
+    schema:
+      query: Query
+    mappings:
+      types:
+        - type: attribute
+          dir: "%kernel.project_dir%/src/Entity"
+          suffix: ~

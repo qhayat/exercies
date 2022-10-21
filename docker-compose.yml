@@ -1,0 +1,38 @@
+version: "3.7"
+services:
+  app_exam:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    volumes:
+     - ./:/var/www/project/:cached # Location of the project for php-fpm. Note this should be the same for NGINX.*
+    networks:
+      - symfony
+    depends_on:
+      - exam_db
+    ports:
+      - target: 80
+        published: 8080
+  exam_db:
+    image: mariadb
+    ports:
+      - target: 3306
+        published: 3307
+    volumes:
+      - mysql_data:/var/lib/mysql:delegated
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: symfony_exam
+      MYSQL_USER: symfony_exam
+      MYSQL_PASSWORD: password
+    # Copy-pasted from https://github.com/docker-library/mariadb/issues/94
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "--silent" ]
+    networks:
+      - symfony
+networks:
+  symfony:
+volumes:
+  persistent:
+  mysql_data:
+    driver: local
