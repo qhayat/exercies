@@ -18,15 +18,17 @@ class Author
     #[ORM\GeneratedValue]
     #[ORM\Column]
     #[GQL\Field(type: "ID")]
+    #[Groups(['author:create'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 150)]
     #[GQL\Field]
     #[Assert\NotBlank]
+    #[Groups(['author:create'])]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 150)]
-    #[Groups(['author:list'])]
+    #[Groups(['author:list', 'author:create'])]
     private ?string $firstName = null;
 
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: Book::class, cascade: ['PERSIST'])]

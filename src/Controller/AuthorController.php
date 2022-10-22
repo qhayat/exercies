@@ -13,7 +13,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use OpenApi\Attributes as OA;
 
 #[Route('/authors')]
 class AuthorController extends AbstractController
@@ -25,18 +24,6 @@ class AuthorController extends AbstractController
     {
     }
 
-    #[OA\Parameter(
-        name: 'lastName',
-        description: 'Author last name',
-        in: 'query',
-        schema: new OA\Schema(type: 'string')
-    )]
-    #[OA\Parameter(
-        name: 'firstName',
-        description: 'Author first name',
-        in: 'query',
-        schema: new OA\Schema(type: 'string')
-    )]
     #[Route('', name: 'author_list', methods: ['GET'])]
     public function index(Request $request): JsonResponse
     {
@@ -47,20 +34,6 @@ class AuthorController extends AbstractController
         ], Response::HTTP_OK, [], ['groups' => ['author:list']]);
     }
 
-    #[OA\RequestBody(
-        description: 'Author information',
-        required: true,
-        content: new OA\JsonContent(
-            properties: [
-                new OA\Property(property: 'lastName', description: 'Author last name', type: 'string', example: 'Doe'),
-                new OA\Property(property: 'firstName', description: 'Author first name', type: 'string', example: 'John'),
-                new OA\Property(property: 'books', description: 'Author book', type: 'array', items: new OA\Items(properties: [
-                    new OA\Property(property: 'title', description: 'Book title', type: 'string', example: 'Clean architecture')
-                ], type: 'object'))
-            ],
-            type: 'object'
-        )
-    )]
     #[Route('', name: 'author_create', methods: ['POST'])]
     public function create(Request $request, ValidatorInterface $validator, SerializerInterface $serializer, LoggerInterface $logger): JsonResponse
     {
@@ -74,7 +47,9 @@ class AuthorController extends AbstractController
 
         try {
             $this->authorRepository->save($author, true);
-            return $this->json(['message' => 'Author created !'], Response::HTTP_CREATED);
+            return $this->json(['data' => [
+                'author' => $author,
+            ]], Response::HTTP_CREATED, [], ['groups' => ['author:create']]);
         } catch (\Exception $e) {
             $logger->error($e->getMessage());
             return $this->json(['message' => 'An error occurred !', Response::HTTP_INTERNAL_SERVER_ERROR]);

@@ -4,6 +4,55 @@ nelmio_api_doc:
             title: My App
             description: This is an awesome app!
             version: 1.0.0
+        paths:
+            /api/authors:
+                post:
+                    requestBody:
+                        content:
+                            application/json:
+                                schema:
+                                    $ref: '#/components/schemas/AuthorRequestBody'
+                get:
+                    parameters:
+                            -
+                                name: 'lastName'
+                                in: query
+                                description: 'Author last name'
+                                schema:
+                                    type: string
+                            -
+                                name: 'firstName'
+                                in: query
+                                description: 'Author first name'
+                                schema:
+                                    type: string
+
+        components:
+            schemas:
+                AuthorRequestBody:
+                    type: object
+                    properties:
+                        lastName:
+                            type: string
+                            description: 'Author last name'
+                            example: 'Doe'
+                        firstName:
+                            type: string
+                            description: 'Author first name'
+                            example: 'John'
+                        books:
+                            type: array
+                            items:
+                                $ref: '#/components/schemas/AuthorBooksInput'
+
+                AuthorBooksInput:
+                    type: object
+                    properties:
+                        title:
+                            type: string
+                            description: 'Author book title'
+                            example: 'Clean architecture'
+
     areas: # to filter documented areas
         path_patterns:
             - ^/api(?!/doc$) # Accepts routes under /api except /api/doc
